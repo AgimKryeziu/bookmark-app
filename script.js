@@ -6,6 +6,8 @@ const websiteNameEl = document.getElementById("website-name");
 const websiteUrlEl = document.getElementById("website-url");
 const bookmarksContainer = document.getElementById("bookmarks-container");
 
+let bookmarks = [];
+
 // Show Modal, Focus on Input
 function showModal() {
   modal.classList.add("show-modal");
@@ -27,9 +29,6 @@ function validate(nameValue, urlValue) {
     alert("Please submit values for both fields.");
     return false;
   }
-  if (urlValue.match(regex)) {
-    alert("match");
-  }
   if (!urlValue.match(regex)) {
     alert("Please provide a valid web address!");
     return false;
@@ -42,19 +41,49 @@ window.addEventListener("click", (e) =>
   e.target === modal ? modal.classList.remove("show-modal") : false
 );
 
+// Fetch Bookmarks
+function fetchBookmarks() {
+  // Get bookmarks from localstorage if avaible
+  if (localStorage.getItem("bookmarks")) {
+    bookmarks = JSON.parse(localStorage.getItem("bookmarks"));
+  } else {
+    // Create bookmarks array in localstorage
+    bookmarks = [
+      {
+        name: " Jacinto Design",
+        url: "https://jacinto.design",
+      },
+    ];
+    localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+  }
+}
+
 // Handle Data from Form
 function storeBookmark(e) {
   e.preventDefault();
   const nameValue = websiteNameEl.value;
   let urlValue = websiteUrlEl.value;
+
   if (!urlValue.includes("http://", "https://")) {
     urlValue = `https://${urlValue}`;
   }
-  console.log(nameValue, urlValue);
   if (!validate(nameValue, urlValue)) {
     return false;
   }
+
+  const bookmark = {
+    name: nameValue,
+    url: urlValue,
+  };
+  bookmarks.push(bookmark);
+  localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+  fetchBookmarks();
+  booknmarkForm.reset();
+  websiteNameEl.focus();
 }
 
 // Event Listener
 booknmarkForm.addEventListener("submit", storeBookmark);
+
+// On Load, Fetch Bookmarks
+fetchBookmarks();
