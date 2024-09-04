@@ -33,6 +33,7 @@ function validate(nameValue, urlValue) {
     alert("Please provide a valid web address!");
     return false;
   }
+  modal.classList.remove("show-modal")
   // Valid
   return true;
 }
@@ -43,6 +44,9 @@ window.addEventListener("click", (e) =>
 
 // Build Bookmarks DOM
 function buildBookmarks() {
+  // Remove all bookmarks elements
+  bookmarksContainer.textContent = "";
+
   // Build items
   bookmarks.forEach((bookmark) => {
     const { name, url } = bookmark;
@@ -85,13 +89,25 @@ function fetchBookmarks() {
     // Create bookmarks array in localstorage
     bookmarks = [
       {
-        name: " Jacinto Design",
+        name: "Jacinto Design",
         url: "https://jacinto.design",
       },
     ];
     localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   }
   buildBookmarks();
+}
+
+// Delete Bookmark
+function deleteBookmark(url) {
+  bookmarks.forEach((bookmark, i) => {
+    if (bookmark.url === url) {
+      bookmarks.splice(i, 1);
+    }
+  });
+  // Update bookmarks array in localStorage, re-populate DOM
+  localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+  fetchBookmarks();
 }
 
 // Handle Data from Form
